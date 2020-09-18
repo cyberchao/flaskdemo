@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>test</title>
+  </head>
+  <body>
+    content page
+    <form method="post">
+      {{form.csrf_token}} {{form.content.label}}{{form.content}}<br />
+      {% for message in form.content.errors %} {{ message }} {% endfor %}<br />
+      {{form.submit}}<br />
+    </form>
+    {% for ct in cts %}
+    <div>{{ ct }}</div>
+    <span><a href="{{ url_for('delete_ct',ct_id=ct.id) }}">delete</a></span>
+    {% endfor %}
+  </body>
+</html>
