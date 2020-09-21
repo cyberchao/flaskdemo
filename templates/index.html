@@ -4,8 +4,70 @@
     <title>test</title>
   </head>
   <body>
-    home page
-    <a href="/register">register</a>
-    <a href="/content">content</a>
+    home page {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul>
+      {% for category, message in messages %}
+      <li class="{{ category }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %} {% endwith %} {% if current_user.is_authenticated %}
+    <div>{{ current_user.username }}</div>
+    <a href="{{ url_for('posts.detail',id=current_user.id) }}">myinfo</a>
+    <a href="{{ url_for('auth.logout') }}">logout</a>
+    {% else %}
+    <a href="{{ url_for('auth.register') }}">register</a>
+    <a href="{{ url_for('auth.login') }}">login</a>
+    {% endif %}
+
+    <form action="{{ url_for('posts.create') }}" method="POST">
+      {% if current_user.is_authenticated %} {{form.csrf_token}}
+      {{form.content.label}}{{form.content}}<br />
+      {% for message in form.content.errors %} {{ message }} {% endfor %}<br />
+      {{form.submit}}<br />
+      {% endif %}
+    </form>
+
+    {% for ct in cts %}
+    <div id='ct-{{ ct.id }}'>
+      <div style="color: red">{{ ct.body }}</div>
+      <span>{{ ct.date }}</span>
+      <span style="color: cadetblue">{{ ct.user.username }}</span>
+      <button style="color: cadetblue" onclick="get_comment(id={{ ct.id }})">评论({{ ct.comments.count() }})</button>
+      <ul id='comment_detail'>
+      </ul>
+  
+      <form action="{{ url_for('posts.comment',id=ct.id) }}" method="POST">
+        {% if current_user.is_authenticated %} {{cmform.csrf_token}}
+        {{cmform.content.label}}{{cmform.content}}<br />
+        {% for message in cmform.content.errors %} {{ message }} {% endfor %}<br />
+        {{cmform.submit}}<br />
+        {% endif %}
+      </form>
+    </div>
+    {% endfor %}
   </body>
+  <script
+    src="https://code.jquery.com/jquery-3.5.1.js"
+    integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+    crossorigin="anonymous"
+  ></script>
+  <script>
+    function get_comment(id) {
+      $.ajax({
+      url: `/content/comment/${id}`,
+      success: function( result ) {
+        console.log(result)
+        var resp = ''
+        for(r of result){
+          console.log(r)
+          resp += `<li>${r.body}-${r.date}</li>`
+        }
+        $( `#ct-${id} ul` ).html(resp);
+      }
+
+    });      
+    }
+
+  </script>
 </html>

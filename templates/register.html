@@ -9,11 +9,22 @@
       {% for message in form.username.errors %}
         {{ message }}
       {% endfor %}<br />
+
       {{form.password.label}}{{form.password}}<br />
       {% for message in form.password.errors %}
         {{ message }}
       {% endfor %}<br />
-      {{form.remember}} {{form.remember.label}}<br />
+
+      {{form.password_sub.label}}{{form.password_sub}}<br />
+      {% for message in form.password_sub.errors %}
+        {{ message }}
+      {% endfor %}<br />
+
+      {{form.email.label}}{{form.email}}<br />
+      {% for message in form.email.errors %}
+        {{ message }}
+      {% endfor %}<br />
+
       {{form.submit}}<br />
     </form>
   </body>

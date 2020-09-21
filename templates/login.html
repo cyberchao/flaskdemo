@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>test</title>
+  </head>
+  <body>
+    <form method="post">
+      {{form.csrf_token}} 
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+      {{form.username.label}}{{form.username}}<br />
+      {% for message in form.username.errors %}
+        {{ message }}
+      {% endfor %}<br />
+
+      {{form.password.label}}{{form.password}}<br />
+      {% for message in form.password.errors %}
+        {{ message }}
+      {% endfor %}<br />
+
+      {{form.remember.label}}{{form.remember}}<br />
+      {% for message in form.remember.errors %}
+        {{ message }}
+      {% endfor %}<br />
+
+      {{form.submit}}<br />
+    </form>
+  </body>
+</html>
