@@ -33,19 +33,23 @@
       <div style="color: red">{{ ct.body }}</div>
       <span>{{ ct.date }}</span>
       <span style="color: cadetblue">{{ ct.user.username }}</span>
-      <button style="color: cadetblue" onclick="get_comment(id={{ ct.id }})">评论({{ ct.comments.count() }})</button>
-      <ul id='comment_detail'>
+      <button style="color: cadetblue" onclick="get_comment({{ ct.id }})">评论({{ ct.comments.count() }})</button>
+      <ul id='comment_detail-{{ ct.id }}' hidden>
+        <form action="{{ url_for('posts.comment',id=ct.id) }}" method="POST">
+          {% if current_user.is_authenticated %} {{cmform.csrf_token}}
+          {{cmform.content.label}}{{cmform.content}}<br />
+          {% for message in cmform.content.errors %} {{ message }} {% endfor %}<br />
+          {{cmform.submit}}<br />
+          {% endif %}
+        </form>
+        {% for cm in ct.comments.all() %}
+
+          <li>{{ cm.body }}-{{cm.user.username}}-{{cm.date}}</li>
+        {% endfor %}
       </ul>
-  
-      <form action="{{ url_for('posts.comment',id=ct.id) }}" method="POST">
-        {% if current_user.is_authenticated %} {{cmform.csrf_token}}
-        {{cmform.content.label}}{{cmform.content}}<br />
-        {% for message in cmform.content.errors %} {{ message }} {% endfor %}<br />
-        {{cmform.submit}}<br />
-        {% endif %}
-      </form>
     </div>
     {% endfor %}
+
   </body>
   <script
     src="https://code.jquery.com/jquery-3.5.1.js"
@@ -53,21 +57,14 @@
     crossorigin="anonymous"
   ></script>
   <script>
+    // 获取评论
     function get_comment(id) {
-      $.ajax({
-      url: `/content/comment/${id}`,
-      success: function( result ) {
-        console.log(result)
-        var resp = ''
-        for(r of result){
-          console.log(r)
-          resp += `<li>${r.body}-${r.date}</li>`
-        }
-        $( `#ct-${id} ul` ).html(resp);
+      if($(`#comment_detail-${id}`).is(':hidden'))
+      {　
+        $(`#comment_detail-${id}`).show();
+      }else{
+        $(`#comment_detail-${id}`).hide();
       }
-
-    });      
     }
-
   </script>
 </html>
